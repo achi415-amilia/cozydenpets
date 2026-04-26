@@ -1,0 +1,456 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Lato:wght@300;400;700&display=swap');
+:root {
+  --bg:#F5F0E8;--card:#fff;--brown:#5C3D2E;--mid:#8B6347;--tan:#D4B896;
+  --accent:#C17F4A;--sage:#7A9E7E;--text:#3a2515;--border:rgba(92,61,46,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+.app{max-width:780px;margin:0 auto;}
+.app-header{background:var(--brown);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-header h1{font-family:'Playfair Display',serif;color:#fff;font-size:20px;}
+.app-header .save-dot{width:8px;height:8px;border-radius:50%;background:#6fcf97;display:inline-block;margin-right:6px;}
+.app-header span{color:rgba(255,255,255,0.7);font-size:12px;display:flex;align-items:center;gap:4px;}
+.tabs{display:flex;background:#4a2c1a;}
+.tab{flex:1;padding:10px 4px;text-align:center;color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-weight:700;}
+.tab.active{color:#fff;border-bottom-color:var(--accent);}
+.panel{display:none;padding:14px;}
+.panel.active{display:block;}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--card);border-radius:10px;padding:12px 10px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:20px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif;}
+.stat-lbl{font-size:10px;color:var(--mid);text-transform:uppercase;letter-spacing:.8px;margin-top:2px;}
+
+.section-hd{font-family:'Playfair Display',serif;font-size:15px;color:var(--brown);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.btn-add{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;}
+.btn-add:hover{background:var(--brown);}
+.btn-sm{background:transparent;border:1px solid var(--tan);color:var(--mid);border-radius:14px;padding:3px 10px;font-size:11px;cursor:pointer;margin-left:4px;}
+.btn-sm:hover{background:var(--tan);}
+
+.list{display:flex;flex-direction:column;gap:8px;}
+.bcard{background:var(--card);border-radius:10px;padding:11px 13px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.bcard-icon{width:36px;height:36px;border-radius:50%;background:#f5ece0;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.bcard-info{flex:1;min-width:0;}
+.bcard-info strong{font-size:13px;color:var(--brown);}
+.bcard-info p{font-size:11px;color:var(--mid);margin-top:1px;}
+.bcard-right{text-align:right;flex-shrink:0;}
+.amount{font-size:14px;font-weight:700;color:var(--sage);}
+.date-tag{font-size:10px;color:var(--mid);margin-top:2px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:3px;}
+.s-confirmed{background:#e8f5e9;color:#2e7d32;}
+.s-pending{background:#fff3e0;color:#e65100;}
+.s-done{background:#ede7f6;color:#4527a0;}
+.del-btn{background:none;border:none;color:var(--tan);cursor:pointer;font-size:14px;padding:0 4px;margin-left:4px;}
+.del-btn:hover{color:#c0392b;}
+
+.paste-box{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:14px;}
+.paste-box label{font-size:11px;color:var(--mid);font-weight:700;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:6px;}
+.paste-box textarea{width:100%;border:1px solid var(--tan);border-radius:8px;padding:8px;font-size:12px;font-family:'Lato',sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;height:64px;}
+.paste-box textarea:focus{border-color:var(--accent);}
+.parse-btn{background:var(--accent);color:#fff;border:none;border-radius:16px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;}
+.parse-result{margin-top:8px;font-size:12px;color:var(--sage);font-weight:700;display:none;}
+
+.form-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+.form-overlay.open{display:flex;}
+.form-box{background:var(--card);border-radius:14px;padding:20px;width:340px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.form-box h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:14px;}
+.form-row{margin-bottom:10px;}
+.form-row label{display:block;font-size:11px;color:var(--mid);font-weight:700;letter-spacing:.5px;margin-bottom:3px;text-transform:uppercase;}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:7px 10px;border:1px solid var(--tan);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:'Lato',sans-serif;}
+.form-row input:focus,.form-row select:focus{border-color:var(--accent);}
+.autocomplete{position:relative;}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--tan);border-radius:8px;z-index:200;max-height:120px;overflow-y:auto;display:none;}
+.ac-item{padding:8px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);}
+.ac-item:hover{background:var(--bg);}
+.ac-item:last-child{border-bottom:none;}
+.form-btns{display:flex;gap:8px;margin-top:14px;}
+.btn-save{flex:1;background:var(--accent);color:#fff;border:none;border-radius:20px;padding:9px;font-weight:700;cursor:pointer;font-size:13px;}
+.btn-cancel{flex:1;background:transparent;color:var(--mid);border:1px solid var(--tan);border-radius:20px;padding:9px;font-weight:700;cursor:pointer;font-size:13px;}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px;}
+.cal-day-hd{text-align:center;font-size:9px;color:var(--mid);font-weight:700;letter-spacing:.8px;padding:3px 0;}
+.cal-cell{background:var(--card);border-radius:5px;min-height:44px;padding:3px;border:1px solid var(--border);font-size:10px;}
+.cal-cell.has-event{border-color:var(--accent);background:#fdf3e7;}
+.cal-cell.today{border-color:var(--sage);}
+.cal-num{font-size:10px;color:var(--mid);font-weight:700;}
+.cal-event{background:var(--accent);color:#fff;border-radius:3px;padding:1px 3px;font-size:9px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.month-nav span{font-family:'Playfair Display',serif;font-size:15px;color:var(--brown);}
+.month-btn{background:none;border:1px solid var(--tan);border-radius:6px;padding:2px 9px;cursor:pointer;color:var(--mid);}
+
+.pay-summary{background:var(--brown);border-radius:12px;padding:14px 18px;color:#fff;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.pay-summary .big{font-family:'Playfair Display',serif;font-size:28px;}
+.pay-summary .lbl{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.8px;}
+
+.empty-state{text-align:center;padding:28px;color:var(--mid);font-size:13px;}
+.empty-state .ei{font-size:32px;margin-bottom:8px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--brown);color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+
+<div class="app">
+<div class="app-header">
+  <h1>🏡 Cozy Den</h1>
+  <span><span class="save-dot"></span>Auto-saving</span>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+  <div class="tab" onclick="showTab('bookings')">Bookings</div>
+  <div class="tab" onclick="showTab('calendar')">Calendar</div>
+  <div class="tab" onclick="showTab('customers')">Customers</div>
+  <div class="tab" onclick="showTab('payments')">Payments</div>
+</div>
+
+<div id="dashboard" class="panel active">
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val" id="s-bookings">0</div><div class="stat-lbl">Bookings</div></div>
+    <div class="stat"><div class="stat-val" id="s-customers">0</div><div class="stat-lbl">Customers</div></div>
+    <div class="stat"><div class="stat-val" id="s-month">$0</div><div class="stat-lbl">This Month</div></div>
+    <div class="stat"><div class="stat-val" id="s-pending">0</div><div class="stat-lbl">Pending</div></div>
+  </div>
+  <div class="section-hd">Upcoming Bookings</div>
+  <div id="dash-upcoming" class="list"></div>
+</div>
+
+<div id="bookings" class="panel">
+  <div class="paste-box">
+    <label>Paste a message to auto-fill a booking</label>
+    <textarea id="paste-input" placeholder='e.g. "Hey can you watch Max June 3-5? I can pay $40" or paste any chat message...'></textarea>
+    <button class="parse-btn" onclick="parseMessage()">Extract Info</button>
+    <div class="parse-result" id="parse-result"></div>
+  </div>
+  <div class="section-hd">All Bookings <button class="btn-add" onclick="openForm('booking')">+ Add</button></div>
+  <div id="booking-list" class="list"></div>
+</div>
+
+<div id="calendar" class="panel">
+  <div class="month-nav">
+    <button class="month-btn" onclick="changeMonth(-1)">&#8249;</button>
+    <span id="month-label"></span>
+    <button class="month-btn" onclick="changeMonth(1)">&#8250;</button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div id="cal-detail" class="list"></div>
+</div>
+
+<div id="customers" class="panel">
+  <div class="section-hd">Customers <button class="btn-add" onclick="openForm('customer')">+ Add</button></div>
+  <div id="customer-list" class="list"></div>
+</div>
+
+<div id="payments" class="panel">
+  <div class="pay-summary">
+    <div><div class="lbl">Total Earned</div><div class="big" id="total-earned">$0</div></div>
+    <div style="text-align:right"><div class="lbl">Unpaid</div><div class="big" id="total-unpaid" style="color:#FFD580">$0</div></div>
+  </div>
+  <div class="section-hd">Payment Log <button class="btn-add" onclick="openForm('payment')">+ Add</button></div>
+  <div id="payment-list" class="list"></div>
+</div>
+</div>
+
+<div class="form-overlay" id="form-overlay">
+  <div class="form-box">
+    <h3 id="form-title">Add</h3>
+    <div id="form-fields"></div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveForm()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORE = 'cozydenv2';
+const petEmoji = {Dog:'🐶',Cat:'🐱',Bird:'🐦',Fish:'🐠',Rabbit:'🐰',Reptile:'🦎',Other:'🐾'};
+const services = ['Overnight Stay','Dog Walking','Drop-In Visit','Daycare','Bird & Small Pet','Fish & Reptiles'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let db = {bookings:[], customers:[], payments:[], nextId:1};
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+let currentForm = '', prefill = {};
+
+function load() {
+  try { const s = localStorage.getItem(STORE); if(s) db = JSON.parse(s); } catch(e){}
+}
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(db)); } catch(e){}
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active',['dashboard','bookings','calendar','customers','payments'][i]===t);
+  });
+  document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  if(t==='dashboard') renderDash();
+  if(t==='bookings') renderBookings();
+  if(t==='calendar') renderCal();
+  if(t==='customers') renderCustomers();
+  if(t==='payments') renderPayments();
+}
+
+function uid() { return db.nextId++; }
+
+function renderDash() {
+  const today = new Date().toISOString().slice(0,10);
+  const upcoming = db.bookings.filter(b=>b.start>=today).sort((a,b)=>a.start.localeCompare(b.start)).slice(0,4);
+  const el = document.getElementById('dash-upcoming');
+  el.innerHTML = upcoming.length ? upcoming.map(b=>bcardHTML(b)).join('') : '<div class="empty-state"><div class="ei">🗓️</div>No upcoming bookings — add one!</div>';
+  document.getElementById('s-bookings').textContent = db.bookings.length;
+  document.getElementById('s-customers').textContent = db.customers.length;
+  document.getElementById('s-pending').textContent = db.bookings.filter(b=>b.status==='pending').length;
+  const mon = String(new Date().getMonth()+1).padStart(2,'0');
+  const yr = String(new Date().getFullYear());
+  const monTotal = db.payments.filter(p=>p.status==='paid'&&p.date&&p.date.startsWith(yr+'-'+mon)).reduce((a,p)=>a+Number(p.amount),0);
+  document.getElementById('s-month').textContent = '$'+monTotal;
+}
+
+function bcardHTML(b) {
+  return `<div class="bcard">
+    <div class="bcard-icon">${petEmoji[b.petType]||'🐾'}</div>
+    <div class="bcard-info">
+      <strong>${b.customer}</strong>
+      <p>${b.pet||''} ${b.service?'· '+b.service:''}</p>
+      <span class="badge s-${b.status||'pending'}">${b.status||'pending'}</span>
+    </div>
+    <div class="bcard-right">
+      <div class="amount">$${b.amount||0}</div>
+      <div class="date-tag">${b.start||''}${b.end&&b.end!==b.start?' → '+b.end:''}</div>
+      <button class="del-btn" onclick="deleteItem('bookings',${b.id})">✕</button>
+    </div>
+  </div>`;
+}
+
+function renderBookings() {
+  const el = document.getElementById('booking-list');
+  if(!db.bookings.length){el.innerHTML='<div class="empty-state"><div class="ei">📋</div>No bookings yet — paste a message above or tap + Add</div>';return;}
+  el.innerHTML = [...db.bookings].reverse().map(b=>bcardHTML(b)).join('');
+}
+
+function renderCustomers() {
+  const el = document.getElementById('customer-list');
+  if(!db.customers.length){el.innerHTML='<div class="empty-state"><div class="ei">👤</div>No customers yet</div>';return;}
+  el.innerHTML = [...db.customers].map(c=>`
+    <div class="bcard">
+      <div class="bcard-icon">${petEmoji[c.petType]||'🐾'}</div>
+      <div class="bcard-info">
+        <strong>${c.name}</strong>
+        <p>${c.pet||''} · ${c.petType||''}</p>
+        <p style="font-size:10px;color:var(--mid);margin-top:2px">${c.notes||''}</p>
+      </div>
+      <div class="bcard-right">
+        <div class="date-tag" style="font-size:11px">${c.phone||''}</div>
+        <button class="del-btn" onclick="deleteItem('customers',${c.id})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderPayments() {
+  const paid = db.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+Number(p.amount),0);
+  const unpaid = db.payments.filter(p=>p.status==='unpaid').reduce((a,p)=>a+Number(p.amount),0);
+  document.getElementById('total-earned').textContent='$'+paid;
+  document.getElementById('total-unpaid').textContent='$'+unpaid;
+  const el = document.getElementById('payment-list');
+  if(!db.payments.length){el.innerHTML='<div class="empty-state"><div class="ei">💰</div>No payments logged yet</div>';return;}
+  el.innerHTML=[...db.payments].reverse().map(p=>`
+    <div class="bcard">
+      <div class="bcard-icon" style="background:${p.status==='paid'?'#e8f5e9':'#fff3e0'}">${p.status==='paid'?'✅':'⏳'}</div>
+      <div class="bcard-info">
+        <strong>${p.customer}</strong>
+        <p>${p.method||''} · ${p.date||''}</p>
+      </div>
+      <div class="bcard-right">
+        <div class="amount" style="color:${p.status==='paid'?'var(--sage)':'var(--accent)'}">$${p.amount}</div>
+        <span class="badge" style="background:${p.status==='paid'?'#e8f5e9':'#fff3e0'};color:${p.status==='paid'?'#2e7d32':'#e65100'}">${p.status}</span>
+        <button class="del-btn" onclick="deleteItem('payments',${p.id})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderCal() {
+  document.getElementById('month-label').textContent = months[calMonth]+' '+calYear;
+  const grid = document.getElementById('cal-grid');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = days.map(d=>`<div class="cal-day-hd">${d}</div>`).join('');
+  const first = new Date(calYear,calMonth,1).getDay();
+  const total = new Date(calYear,calMonth+1,0).getDate();
+  const todayStr = new Date().toISOString().slice(0,10);
+  for(let i=0;i<first;i++) html+=`<div class="cal-cell" style="background:transparent;border-color:transparent"></div>`;
+  let selectedDay = null;
+  for(let d=1;d<=total;d++){
+    const dStr=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const evts=db.bookings.filter(b=>b.start<=dStr&&(b.end||b.start)>=dStr);
+    const isToday=dStr===todayStr;
+    html+=`<div class="cal-cell${evts.length?' has-event':''}${isToday?' today':''}" onclick="showCalDay('${dStr}')">
+      <div class="cal-num">${d}</div>
+      ${evts.slice(0,2).map(e=>`<div class="cal-event">${(e.customer||'').split(' ')[0]}</div>`).join('')}
+    </div>`;
+  }
+  grid.innerHTML=html;
+  document.getElementById('cal-detail').innerHTML='';
+}
+
+function showCalDay(dStr) {
+  const evts = db.bookings.filter(b=>b.start<=dStr&&(b.end||b.start)>=dStr);
+  const el = document.getElementById('cal-detail');
+  el.innerHTML = evts.length ? `<div style="font-size:12px;color:var(--mid);margin-bottom:6px;font-weight:700">${dStr}</div>`+evts.map(b=>bcardHTML(b)).join('') : '';
+}
+
+function changeMonth(dir){
+  calMonth+=dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCal();
+}
+
+function deleteItem(type, id) {
+  db[type]=db[type].filter(x=>x.id!==id);
+  save(); toast('Deleted');
+  if(type==='bookings') renderBookings();
+  if(type==='customers') renderCustomers();
+  if(type==='payments') renderPayments();
+  renderDash();
+}
+
+function parseMessage() {
+  const txt = document.getElementById('paste-input').value;
+  if(!txt.trim()){toast('Paste a message first!');return;}
+  let result = {};
+  const dollarMatch = txt.match(/\$\s?(\d+)/);
+  if(dollarMatch) result.amount = dollarMatch[1];
+  const datePatterns = [
+    /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})(?:\s*[-–to]+\s*(\d{1,2}))?\b/i,
+    /\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/,
+    /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i
+  ];
+  const monthMap={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12,january:1,february:2,march:3,april:4,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+  const dm = txt.match(datePatterns[0]);
+  if(dm){
+    const mNum=String(monthMap[dm[1].toLowerCase().slice(0,3)]).padStart(2,'0');
+    const yr=new Date().getFullYear();
+    result.start=yr+'-'+mNum+'-'+String(dm[2]).padStart(2,'0');
+    if(dm[3]) result.end=yr+'-'+mNum+'-'+String(dm[3]).padStart(2,'0');
+  }
+  const nmMatch = txt.match(/\b(?:watch|sit|care for|take care of)\s+([A-Z][a-z]+)/);
+  if(nmMatch) result.pet=nmMatch[1];
+  const custNames = db.customers.map(c=>c.name);
+  for(const n of custNames){ if(txt.toLowerCase().includes(n.toLowerCase().split(' ')[0].toLowerCase())) result.customer=n; }
+  const venmoMatch = txt.match(/venmo/i);
+  const zelleMatch = txt.match(/zelle/i);
+  const cashMatch = txt.match(/cash/i);
+  if(venmoMatch) result.method='Venmo';
+  else if(zelleMatch) result.method='Zelle';
+  else if(cashMatch) result.method='Cash';
+  const pr = document.getElementById('parse-result');
+  if(Object.keys(result).length){
+    prefill = result;
+    pr.style.display='block';
+    pr.textContent = '✓ Found: '+(result.customer?result.customer+' · ':'')+(result.pet?result.pet+' · ':'')+(result.start?result.start+' · ':'')+(result.amount?'$'+result.amount:'');
+    setTimeout(()=>openForm('booking'),600);
+  } else {
+    pr.style.display='block';
+    pr.style.color='var(--accent)';
+    pr.textContent = 'Could not extract details — fill in manually below.';
+    openForm('booking');
+  }
+}
+
+function openForm(type) {
+  currentForm=type;
+  const titles={booking:'Add Booking',customer:'Add Customer',payment:'Log Payment'};
+  document.getElementById('form-title').textContent=titles[type];
+  const pf=prefill;
+  const custOpts = db.customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+  const fields={
+    booking:`
+      <div class="form-row autocomplete">
+        <label>Customer Name</label>
+        <input id="f-cust" placeholder="Type name..." value="${pf.customer||''}" oninput="acSuggest(this,'f-cust-ac')" autocomplete="off"/>
+        <div class="ac-list" id="f-cust-ac"></div>
+      </div>
+      <div class="form-row"><label>Pet Name</label><input id="f-pet" placeholder="e.g. Biscuit" value="${pf.pet||''}"/></div>
+      <div class="form-row"><label>Pet Type</label><select id="f-ptype"><option>Dog</option><option>Cat</option><option>Bird</option><option>Fish</option><option>Rabbit</option><option>Reptile</option><option>Other</option></select></div>
+      <div class="form-row"><label>Service</label><select id="f-svc">${services.map(s=>`<option>${s}</option>`).join('')}</select></div>
+      <div class="form-row"><label>Start Date</label><input id="f-start" type="date" value="${pf.start||''}"/></div>
+      <div class="form-row"><label>End Date</label><input id="f-end" type="date" value="${pf.end||pf.start||''}"/></div>
+      <div class="form-row"><label>Amount ($)</label><input id="f-amt" type="number" placeholder="0" value="${pf.amount||''}"/></div>
+      <div class="form-row"><label>Status</label><select id="f-status"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="done">Done</option></select></div>`,
+    customer:`
+      <div class="form-row"><label>Name</label><input id="f-name" placeholder="Full name"/></div>
+      <div class="form-row"><label>Phone</label><input id="f-phone" placeholder="(928) 555-0000"/></div>
+      <div class="form-row"><label>Pet Name</label><input id="f-pet" placeholder="Pet name"/></div>
+      <div class="form-row"><label>Pet Type</label><select id="f-ptype"><option>Dog</option><option>Cat</option><option>Bird</option><option>Fish</option><option>Rabbit</option><option>Reptile</option><option>Other</option></select></div>
+      <div class="form-row"><label>Notes</label><input id="f-notes" placeholder="Special care instructions"/></div>
+      <div class="form-row"><label>Venmo / Zelle handle</label><input id="f-pay" placeholder="@username"/></div>`,
+    payment:`
+      <div class="form-row autocomplete">
+        <label>Customer</label>
+        <input id="f-cust" placeholder="Type name..." value="${pf.customer||''}" oninput="acSuggest(this,'f-cust-ac2')" autocomplete="off"/>
+        <div class="ac-list" id="f-cust-ac2"></div>
+      </div>
+      <div class="form-row"><label>Amount ($)</label><input id="f-amt" type="number" placeholder="0" value="${pf.amount||''}"/></div>
+      <div class="form-row"><label>Method</label><select id="f-method"><option>Venmo</option><option>Zelle</option><option>Cash</option><option>PayPal</option><option>Check</option></select></div>
+      <div class="form-row"><label>Date</label><input id="f-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+      <div class="form-row"><label>Status</label><select id="f-status"><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select></div>`
+  };
+  document.getElementById('form-fields').innerHTML=fields[type];
+  if(type==='payment'&&pf.method){
+    const sel=document.getElementById('f-method');
+    if(sel){[...sel.options].forEach(o=>{if(o.value===pf.method)o.selected=true;});}
+  }
+  document.getElementById('form-overlay').classList.add('open');
+}
+
+function acSuggest(input, listId) {
+  const val=input.value.toLowerCase();
+  const list=document.getElementById(listId);
+  if(!val){list.style.display='none';return;}
+  const matches=db.customers.filter(c=>c.name.toLowerCase().includes(val));
+  if(!matches.length){list.style.display='none';return;}
+  list.innerHTML=matches.map(c=>`<div class="ac-item" onclick="acSelect('${c.name}','${listId}','${input.id}','${c.pet||''}','${c.petType||''}')">${c.name} · ${c.pet||''}</div>`).join('');
+  list.style.display='block';
+}
+
+function acSelect(name, listId, inputId, pet, petType) {
+  document.getElementById(inputId).value=name;
+  document.getElementById(listId).style.display='none';
+  if(document.getElementById('f-pet')&&pet) document.getElementById('f-pet').value=pet;
+  if(document.getElementById('f-ptype')&&petType){
+    const sel=document.getElementById('f-ptype');
+    [...sel.options].forEach(o=>{if(o.value===petType)o.selected=true;});
+  }
+}
+
+function closeForm(){
+  document.getElementById('form-overlay').classList.remove('open');
+  prefill={};
+  const pr=document.getElementById('parse-result');
+  if(pr){pr.style.display='none';}
+}
+
+function saveForm(){
+  const id=uid();
+  if(currentForm==='booking'){
+    const cust=document.getElementById('f-cust').value.trim()||'Customer';
+    db.bookings.push({id,customer:cust,pet:document.getElementById('f-pet').value,petType:document.getElementById('f-ptype').value,service:document.getElementById('f-svc').value,start:document.getElementById('f-start').value,end:document.getElementById('f-end').value,amount:parseFloat(document.getElementById('f-amt').value)||0,status:document.getElementById('f-status').value});
+  } else if(currentForm==='customer'){
+    db.customers.push({id,name:document.getElementById('f-name').value.trim()||'Customer',phone:document.getElementById('f-phone').value,pet:document.getElementById('f-pet').value,petType:document.getElementById('f-ptype').value,notes:document.getElementById('f-notes').value,payHandle:document.getElementById('f-pay').value});
+  } else if(currentForm==='payment'){
+    db.payments.push({id,customer:document.getElementById('f-cust').value.trim(),amount:parseFloat(document.getElementById('f-amt').value)||0,method:document.getElementById('f-method').value,date:document.getElementById('f-date').value,status:document.getElementById('f-status').value});
+  }
+  save(); closeForm(); toast('Saved!');
+  const tabMap={booking:'bookings',customer:'customers',payment:'payments'};
+  showTab(tabMap[currentForm]);
+  renderDash();
+}
+
+load(); renderDash();
+</script>
